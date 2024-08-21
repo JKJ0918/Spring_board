@@ -10,7 +10,7 @@
 	<!-- Root Context: defines shared resources visible to all other web components -->
 		<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
 	
-	<!-- jdbclog4j2용으로 교체
+	<!-- 하단 jdbclog4j2용으로 교체
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property> 
 		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE"></property> -->
 		
