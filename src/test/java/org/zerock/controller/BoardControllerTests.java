@@ -16,7 +16,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 @RunWith(SpringJUnit4ClassRunner.class)  // 메서드별 테스트용 JUnit4
-@ContextConfiguration({"file:src/main/webapp/WEB-INF/spring/root-context.xml",
+@ContextConfiguration({"file:src/main/webapp/WEB-INF/spring/root-context.xml", // 마이바티스 등
 					   "file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml"}) // 참고할 파일
 @Log4j2
 @WebAppConfiguration // 프론트영역 테스트용
@@ -38,9 +38,9 @@ public class BoardControllerTests {
 		log.info(
 				mockMvc.perform(MockMvcRequestBuilders.get("/board/list")) // url을
 				.andReturn() // 결과를
-				.getModelAndView() //모델에서 뷰까지
+				.getModelAndView() //모델(Spring)에서 뷰(jsp)까지
 				.getModelMap() // 표형식
-				);
+				); // select는 이렇게
 	}
 	
 	@Test

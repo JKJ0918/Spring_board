@@ -1,6 +1,8 @@
 package org.zerock.domain; // domain 패키지는 객체를 담당
 
-import java.util.Date;
+
+
+import java.sql.Date;
 
 import lombok.Data;
 

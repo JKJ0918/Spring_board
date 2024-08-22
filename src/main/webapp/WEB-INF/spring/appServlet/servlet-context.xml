@@ -12,13 +12,13 @@
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
 
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<!-- 프론트에 html, css, js, 부트스트랩 파일을 넣는곳 Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/resources/**" location="/resources/" />
 
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<!-- 컨트롤러를 통해 들어오는 URL과 JSP를 붙이는 경로 Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/WEB-INF/views/" />
-		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="suffix" value=".jsp" /> <!-- 이 둘 사이에 들어가는 경로 -->
 	</beans:bean>
 	
 		<!-- 프론트에서 넘어오는 파일에 대한 처리 -->
@@ -40,7 +40,7 @@
 		<beans:property name="maxInMemorySize" value="1048575600"></beans:property>
 	</beans:bean>
 	
-	
+	<!-- URL을 통해 프론트를 매핑하는 곳을 지정(SCAN용 @controller) -->
 	<context:component-scan base-package="org.zerock.controller" />
 	
 	
