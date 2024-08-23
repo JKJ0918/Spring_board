@@ -18,9 +18,14 @@
 	<div class="col-lg-12">
 		<div class="panel panel-warning">
 			<div class="panel-heading">Board Modify Page</div>
-			<div class="panel-body">
+			<!-- <div class="panel-body"> -->
 				<!-- form박스 만들고 submit 처리 -->
 				<form role="form" action="/board/modify" method="post">
+					<!-- 페이징처리 관련 추가 -->
+					<input type='hidden' name='pageNum' value='<c:out value="${cri.pageNum}"/>'>
+					<input type='hidden' name='amount' value='<c:out value="${cri.amount}"/>'>
+					<input type='hidden' name='type' value='<c:out value="${cri.type}"/>'>
+					<input type='hidden' name='keyword' value='<c:out value="${cri.keyword}"/>'>
 					
 					<div class="form-group">
 						<label>번호</label>

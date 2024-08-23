@@ -91,6 +91,14 @@ public class BoardControllerTests {
 		log.info("결과 url :" + resultPage); // 결과 url :redirect:/board/list
 	}
 	
+	@Test // 페이징 테스
+	public void testListPaging() throws Exception {
+		
+		log.info(mockMvc.perform(MockMvcRequestBuilders.get("/board/list")
+				.param("pageNum", "2")
+				.param("amount", "50"))
+				.andReturn().getModelAndView().getModelMap());
+	}
 	
 	
 }

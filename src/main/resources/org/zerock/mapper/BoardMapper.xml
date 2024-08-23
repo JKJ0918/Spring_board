@@ -51,4 +51,38 @@
 	]]> <!-- 번호를 조건으로 레코드(db의 1 줄을 뜻함)를 삭제한다. -->
 </delete>
 
+<!-- 페이징 처리 관련 -->
+<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+		select
+		bno, title, content, writer, regdate, updateDate
+		from
+		(
+		select /*+INDEX_DESC(tbl_board pk_board) */ rownum rn, bno, title, content, writer, regdate, updateDate
+		from
+			tbl_board
+			where
+	]]>
+	<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+		<foreach item="type" collection="typeArr">
+			<trim prefix="OR">
+				<choose>
+					<when test="type == 'T'.toString()"> title like '%'||#{keyword}||'%' </when>
+					<when test="type == 'C'.toString()"> content like '%'||#{keyword}||'%' </when>
+					<when test="type == 'W'.toString()"> writer like '%'||#{keyword}||'%' </when>
+				</choose>
+			</trim>
+		</foreach>
+	</trim>
+<![CDATA[ rownum <= #{pageNum} * #{amount} ) where rn > (#{pageNum} -1) * #{amount} ]]>
+</select>
+
+<!-- 페이징 처리 관련 2 -->
+<select id="getTotalCount" resultType="int">
+
+	select count(*) from tbl_board where bno > 0
+
+
+</select>
+
 </mapper>

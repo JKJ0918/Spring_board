@@ -3,6 +3,7 @@ package org.zerock.service;
 import java.util.List;
 
 import org.zerock.domain.BoardVO;
+import org.zerock.domain.Criteria;
 
 // 비즈니스 로직을 처리하는 용도, 여러객체를 믹스하여 구현
 
@@ -22,8 +23,10 @@ public interface BoardService { // 각 계층 간의 연결은 인터페이스�
 	
 	public boolean remove(Long bno);		// 1개의 게시글 삭제
 	
-	public List<BoardVO> getlist();			// 게시글의 전체 내용을 리스트로 출력
+	// public List<BoardVO> getlist();			// 게시글의 전체 내용을 리스트로 출력
 	
+	public List<BoardVO> getList(Criteria cri);
 	
+	public int getTotal(Criteria cri);
 	
 }

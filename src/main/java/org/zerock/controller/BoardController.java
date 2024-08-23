@@ -3,11 +3,14 @@ package org.zerock.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.zerock.domain.BoardVO;
+import org.zerock.domain.Criteria;
+import org.zerock.domain.PageDTO;
 import org.zerock.service.BoardService;
 
 import lombok.AllArgsConstructor;
@@ -23,12 +26,26 @@ public class BoardController {
 	//필드
 	private BoardService service; // BoardController boardController = new BoardController(BoardService);
 	
-	@GetMapping("/list") // http://localhost:80/board/list
+	/* @GetMapping("/list") // http://localhost:80/board/list
 	public void list(Model model) { //import org.springframework.ui.Model; 스프링이 관리하는 메모리
 
 	log.info("BoardController.list() 메서드 실행");
 	model.addAttribute("list", service.getlist()); // name: list, Object:List<BoardVO>
 	
+	} */
+	
+	@GetMapping("/list") // 페이징 처리용으로 재 작성
+	public void list(Criteria cri, Model model) {
+		log.info("list : " + cri );
+		model.addAttribute("list", service.getList(cri));
+		// model.addAttribute("pageMaker", new PageDTO(cri, 123));
+		
+		int total = service.getTotal(cri);
+		
+		log.info("total : " + total);
+		
+		model.addAttribute("pageMaker", new PageDTO(cri, total));
+		
 	}
 	
 	@GetMapping("/register") // http://localhost:80/board/register
@@ -53,7 +70,7 @@ public class BoardController {
 	@GetMapping({"/get","/modify"})
 	// 이중화 작업 http://localhost:80/board/get -> board/get.jsp
 	// 이중화 작업 http://localhost:80/board/modify -> board/modify.jsp
-	public void get(@RequestParam("bno") Long bno, Model model) {
+	public void get(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, Model model) {
 		
 		log.info("BoardController.get() 메서드 실행");
 		model.addAttribute("board", service.get(bno));
@@ -61,30 +78,42 @@ public class BoardController {
 	}
 	
 	@PostMapping("/modify") // http://localhost:80/board/modify
-	public String modify(BoardVO board, RedirectAttributes rttr) {
+	public String modify(BoardVO board, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
 		
 		log.info("BoardController.modify() 메서드 실행");
 		
 		if(service.modify(board)) { // service.modify의 리턴 타입이 boolean
 			rttr.addFlashAttribute("result", "success"); // 수정 성공시 success 메시지를 보냄
-		}else {
-			rttr.addFlashAttribute("result", "fail"); // 수정 실패시 fail 메시지를 보냄
 		}
 		
-		return "redirect:/board/list"; // 결론 http://localhost:80/board/list
+		/*
+		 * rttr.addAttribute("pageNum", cri.getPageNum()); rttr.addAttribute("amount",
+		 * cri.getAmount()); rttr.addAttribute("type", cri.getType());
+		 * rttr.addAttribute("keyword", cri.getKeyword());
+		 */
+		/*
+			 * else { rttr.addFlashAttribute("result", "fail"); // 수정 실패시 fail 메시지를 보냄 }
+			 */
+		
+		return "redirect:/board/list" + cri.getListLink(); // 결론 http://localhost:80/board/list
 	}
 	
 	@PostMapping("/remove") // 번호를 받아 delete 쿼리를 실행
-	public String remove(@RequestParam("bno") Long bno, RedirectAttributes rttr) {
+	public String remove(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
 
 		log.info("BoardController.remove() 메서드 실행");
 		if(service.remove(bno)) { // service.remove의 리턴 타입이 boolean
 			rttr.addFlashAttribute("result", "success"); // 수정 성공시 success 메시지를 보냄
-		}else {
-			rttr.addFlashAttribute("result", "fail"); // 수정 실패시 fail 메시지를 보냄
-		}
+		} /*
+			 * else { rttr.addFlashAttribute("result", "fail"); // 수정 실패시 fail 메시지를 보냄 }
+			 */
+		/*
+		 * rttr.addAttribute("pageNum", cri.getPageNum()); rttr.addAttribute("amount",
+		 * cri.getAmount()); rttr.addAttribute("type", cri.getKeyword());
+		 * rttr.addAttribute("keyword", cri.getKeyword());
+		 */
 		
-		return "redirect:/board/list"; // 결론 http://localhost:80/board/list
+		return "redirect:/board/list" + cri.getListLink(); // 결론 http://localhost:80/board/list
 	}
 	
 	

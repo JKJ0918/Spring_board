@@ -24,7 +24,7 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <table width="100%" class="table table-striped table-bordered table-hover" > <!-- id="dataTables-example" -->
                                 <thead>
                                     <tr>
                                         <th>번호</th>
@@ -38,10 +38,15 @@
                                 <c:forEach items="${ list }" var="boardlist"> <!-- 객체를 반복적으로 돌린다. (list객체) -->
                                 	<tr><!-- 1행 추가 -->
                                 		<td><c:out value="${ boardlist.bno }" /></td><!-- 1열 추가 -->
-                                		<td><a href='/board/get?bno=<c:out value="${ boardlist.bno }"/>'> <!-- 게시글 제목 클릭시 이동을 위해 사용 -->
+<%--                                 		<td><a href='/board/get?bno=<c:out value="${ boardlist.bno }"/>'> <!-- 게시글 제목 클릭시 이동을 위해 사용 -->
                                 			<c:out value="${ boardlist.title }" />
                                 		</a>
-                                		</td><!-- 2열 추가 -->
+                                		</td><!-- 2열 추가 --> --%>
+                                		<td><a class='move' href='<c:out value="${boardlist.bno}"/>'>
+											<c:out value="${boardlist.title}" />
+										</a>
+										</td>
+                      
                                 		<td><c:out value="${ boardlist.writer }" /></td><!-- 3열 추가 -->
                                 		<td><fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${ boardlist.regdate }" /></td><!-- 4열 추가 -->
                                 		<td><fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${ boardlist.updateDate }" /></td><!-- 5열 추가 -->
@@ -49,6 +54,72 @@
                                 </c:forEach>
                                 
                                 </table>
+                                
+				<div class='row'>
+					<div class="col-lg-12">
+
+						<form id='searchForm' action="/board/list" method='get'>
+							<select name='type'>
+								<option value=""
+									<c:out value="${pageMaker.cri.type == null?'selected':''}"/>>--</option>
+								<option value="T"
+									<c:out value="${pageMaker.cri.type eq 'T'?'selected':''}"/>>제목</option>
+								<option value="C"
+									<c:out value="${pageMaker.cri.type eq 'C'?'selected':''}"/>>내용</option>
+								<option value="W"
+									<c:out value="${pageMaker.cri.type eq 'W'?'selected':''}"/>>작성자</option>
+								<option value="TC"
+									<c:out value="${pageMaker.cri.type eq 'TC'?'selected':''}"/>>제목
+									or 내용</option>
+								<option value="TW"
+									<c:out value="${pageMaker.cri.type eq 'TW'?'selected':''}"/>>제목
+									or 작성자</option>
+								<option value="TWC"
+									<c:out value="${pageMaker.cri.type eq 'TWC'?'selected':''}"/>>제목
+									or 내용 or 작성자</option>
+							</select> <input type='text' name='keyword'
+								value='<c:out value="${pageMaker.cri.keyword}"/>' /> <input
+								type='hidden' name='pageNum'
+								value='<c:out value="${pageMaker.cri.pageNum}"/>' /> <input
+								type='hidden' name='amount'
+								value='<c:out value="${pageMaker.cri.amount}"/>' />
+							<button class='btn btn-default'>Search</button>
+						</form>
+					</div>
+				</div>
+                                
+                                <!-- 페이징 화면 처리 -->
+                                <div class='pull-right'>
+                                	<ul class="pagination">
+                                		
+                                		<c:if test="${pageMaker.prev}">
+                                		<li class="paginate_button previous">
+                                		<a href="${pageMaker.startPage -1 }">Previous</a>
+                                		</li>
+                                		</c:if>
+                                		
+                                		<c:forEach var="num" begin="${ pageMaker.startPage }" end="${pageMaker.endPage }">
+                                		<li class='paginate_button  ${pageMaker.cri.pageNum == num ? "active":""} '>
+                                		<a href="${num}">${num}</a>
+                                		</li>
+                                		</c:forEach>
+                                		
+                                		<c:if test="${ pageMaker.next }">
+                                			<li class="paginate_button next">
+                                			<a href="${pageMaker.endPage +1 }">Next</a>
+                                			</li>
+                                		</c:if>
+                                	</ul>
+                                </div>
+                                <!-- end Pagination -->
+                                <!-- 페이징 관련 -->
+                                <form id='actionForm' action="/board/list" method='get'>
+                                	<input type='hidden' name='pageNum' value='${pageMaker.cri.pageNum }' >
+                                	<input type='hidden' name='amount' value='${pageMaker.cri.amount }' >                                	
+                                	<input type='hidden' name='type' value='${pageMaker.cri.type }' >                                	
+                                	<input type='hidden' name='keyword' value='${pageMaker.cri.keyword }' >                                	
+                                </form>
+                                
                                  <!-- Modal 요즘 트렌드는 alert 대신 모달-->
                             		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                 		<div class="modal-dialog">
@@ -109,6 +180,49 @@
 		
 		$("#regBtn").on("click", function(){ /* 22행의 id="regBtn 클릭 동작(기능)" */ /* id는 자바 #으로 호출 '.'은 클래스호출' */
 			self.location = "/board/register"; /* 현재문서를 /board/register로 이동 */
+		});
+		
+		//페이징관련
+		var actionForm = $("#actionForm");
+		
+		$(".paginate_button a").on("click", function(e){
+			
+			e.preventDefault();
+			
+			console.log('click');
+			
+			actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+			actionForm.submit();
+		});
+		
+		$(".move").on("click", function(e){
+			
+			e.preventDefault();
+			actionForm.append("<input type='hidden' name='bno' value='"+$(this).attr("href")+"'>");
+			actionForm.attr("action", "/board/get");
+			actionForm.submit();
+			
+		});
+		
+		var searchForm = $("#searchForm");
+		
+		$("#searchForm button").on("click", function(e){
+			
+			if(!searchForm.find("option:selected").val()){
+				alert("검색종류를 선택하세요.");
+				return false;
+			}
+			
+			if(!searchForm.find("input[name='keyword']").val()){
+				alert("키워드를 입력하세요.");
+				return false;
+			}
+			
+			searchForm.find("input[name='pageNum']").val("1");
+			e.preventDefault();
+			
+			searchForm.submit();
+			
 		});
 		
 	}); /* 2024 08 22 오늘의 핵심코드 */
