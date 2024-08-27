@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zerock</groupId>
 	<artifactId>controller</artifactId>
-	<name>RestTest</name>
+	<name>board</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
@@ -33,28 +33,28 @@
 			<version>${org.springframework-version}</version>
 		</dependency>
 		
-		<!-- json 추가 3개는 프론트 용 결과를 json 타입으로 출력-->
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<!-- json 추가 -->
+		<!-- URL 뒤에 .json을 넣으면 json 데이터로 출력 됨 https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-databind</artifactId>
 		    <version>2.9.6</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
+		<!-- RestController의 기본값이 xml 처리 https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.dataformat</groupId>
 		    <artifactId>jackson-dataformat-xml</artifactId>
 		    <version>2.9.6</version>
 		</dependency>
 		
-		<!-- 구글에서 만든 : json타입의 문자열 변환 https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<!-- json을 받아서 객체 처리용 https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
 		    <groupId>com.google.code.gson</groupId>
 		    <artifactId>gson</artifactId>
 		    <version>2.8.2</version>
 		</dependency>
-		
+				
 		<dependency> <!-- 스프링 테스트 -->
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -152,7 +152,7 @@
 			<version>${org.aspectj-version}</version>
 		</dependency>	
 		
-		<!-- Logging 
+		<!-- Logging : log4j는 취약점 발견으로 사용 안함
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -193,7 +193,9 @@
 				</exclusion>
 			</exclusions>
 			<scope>runtime</scope>
-		</dependency> -->
+		</dependency>
+		-->
+		
 		
 		<!-- log4j2 활성화 : resources log4j2.xml 변경 https://logging.apache.org/log4j/2.x/maven-artifacts.html -->
 		<dependency> 
@@ -211,7 +213,7 @@
 		    <artifactId>log4j-slf4j-impl</artifactId>
 		    <version>2.18.0</version>
   		</dependency>
-  		
+
 		<!-- @Inject -->
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -219,14 +221,15 @@
 			<version>1</version>
 		</dependency>
 				
-		<!-- Servlet 
+		<!-- Servlet -->
+		<!-- 구버전 주석처리함
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
-		</dependency>-->
-		
+		</dependency>
+		-->
 		<!-- 서블릿 버전 향상 https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
 		    <groupId>javax.servlet</groupId>
@@ -274,7 +277,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>2.5.1</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
