@@ -29,7 +29,7 @@ public class ReplyController { // Rest 방식의 컨트롤러로 구현 + ajax �
 	// private BoardService bService; 나중에 응용해 보세요.
 	private ReplyService service;
 
-	// http://localhost::80/replies/new
+	// http://localhost:80/replies/new
 	@PostMapping(value="/new", consumes = "application/json", produces = MediaType.TEXT_PLAIN_VALUE) //입력값은 json으로
 	public ResponseEntity<String> create(@RequestBody ReplyVO vo) {
 		// 리턴은 200이나 500으로 처리 된다.
@@ -46,7 +46,7 @@ public class ReplyController { // Rest 방식의 컨트롤러로 구현 + ajax �
 	
 	//http://localhost:80/replies/pages/11/1 -> xml
 	//http://localhost:80/replies/pages/11/1.json -> json
-	@GetMapping(value = "/pages/{bno}/{page}",
+	@GetMapping(value = "/pages/{bno}/{page}.json",
 				produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	public ResponseEntity<List<ReplyVO>> getList(@PathVariable("page") int page, @PathVariable("bno") Long bno){
 		
@@ -81,7 +81,9 @@ public class ReplyController { // Rest 방식의 컨트롤러로 구현 + ajax �
 	}
 	
 	//http://localhost:80//replies/4
-	@RequestMapping(method = { RequestMethod.PUT, RequestMethod.PATCH },
+	//RequestMehod.PUT -> @PutMapping (객체 전체 필드 를 수정한다.)
+	//RequestMehod.PATCH -> @PatchMapping (객체의 일부 필드(부분)수정 한다.)
+	@RequestMapping(method = { RequestMethod.PUT, RequestMethod.PATCH }, //put 전체/ patch 일부 수정
 					value="/{rno}",consumes = "application/json", produces = MediaType.TEXT_PLAIN_VALUE )
 	public ResponseEntity<String> modify(@RequestBody ReplyVO vo, @PathVariable("rno") Long rno){
 		//					   			 이미 폼(form)에 있는 값			 수정할 번호
