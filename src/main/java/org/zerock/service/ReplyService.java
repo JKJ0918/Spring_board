@@ -3,6 +3,7 @@ package org.zerock.service;
 import java.util.List;
 
 import org.zerock.domain.Criteria;
+import org.zerock.domain.ReplyPageDTO;
 import org.zerock.domain.ReplyVO;
 
 public interface ReplyService { // 구현 클래스 필수 ReplyServiceImpl.java
@@ -17,4 +18,5 @@ public interface ReplyService { // 구현 클래스 필수 ReplyServiceImpl.java
 	
 	public List<ReplyVO> getList(Criteria cti, Long bno); // 게시글을 이용해 모든 댓글을 리스트로 출력
 	
+	public ReplyPageDTO getListPage(Criteria cri, Long bno); // 댓글 페이징 처리
 }

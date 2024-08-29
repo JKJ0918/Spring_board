@@ -95,5 +95,15 @@ public class ReplyMapperTests {
 		
 	}
 	
+	// 댓글 페이징 테스트 1
+	@Test
+	public void testList2() {
+		Criteria cri = new Criteria(1, 10);
+		
+		List<ReplyVO> replies = mapper.getListWithPaging(cri, 11L);
+		
+		replies.forEach(reply -> log.info(reply));
+	}
+	
 
 }
