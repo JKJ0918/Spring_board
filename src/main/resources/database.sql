@@ -32,8 +32,6 @@ create sequence seq_reply ; -- 댓글용 자동번호객체 추가
 alter table tbl_reply add constraint pk_reply primary key (rno); 
 -- pk를 rno로 지정(롤이름 : pk_reply)
 
-insert into TBL_BOARD (bno, title, content, writer) (select seq_board.nextval, title, content, writer from tbl_board); -- 재귀 복사
-
 alter table tbl_reply add constraint fk_reply_board foreign key (bno) references tbl_board (bno); 
 -- tbl_reply의 bno(자)와 tbl_board의 bno(부)를 연결 (부모가 있어야 자식이 있다) 
 

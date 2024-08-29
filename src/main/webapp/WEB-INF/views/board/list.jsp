@@ -18,7 +18,8 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				Board List Page
-				<button id='regBtn' type="button" class="btn btn-xs pull-right">새 게시글 등록</button>
+				<button id='regBtn' type="button" class="btn btn-xs pull-right">Register
+					New Board</button>
 			</div>
 
 			<!-- /.panel-heading -->
@@ -34,7 +35,7 @@
 						</tr>
 					</thead>
 
-					<c:forEach items="${list}" var="board"> <!-- 리스트 처리 하겠다. -->
+					<c:forEach items="${list}" var="board">
 						<tr>
 							<td><c:out value="${board.bno}" /></td>
 							<%-- <td><a href='/board/get?bno=<c:out value="${board.bno}"/>'><c:out value="${board.title}"/></a></td> --%>
@@ -151,8 +152,10 @@
 						</div>
 						<div class="modal-body">처리가 완료되었습니다.</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button><!-- 딱히 필요없어 보임 -->
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Save
+								changes</button>
 						</div>
 					</div>
 					<!-- /.modal-content -->
@@ -169,6 +172,10 @@
 </div>
 </div>
 <!-- /.row -->
+
+
+
+
 
 
 <script type="text/javascript">
