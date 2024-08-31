@@ -101,8 +101,12 @@ $("#uploadBtn").on("click", function(e) {
 	 contentType: false,
 	 data: formData,
 	 type: 'POST',
+	 dataType : 'json',
 	 success: function(result){
-	 alert("Uploaded");
+		 
+	 // alert("Uploaded");
+	 console.log(result)
+
 	 }
 	 }); //$.ajax */
 });

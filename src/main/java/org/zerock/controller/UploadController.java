@@ -1,18 +1,27 @@
 package org.zerock.controller;
 
 import java.io.File;
-
+import java.io.FileOutputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.zerock.domain.AttachFileDTO;
 
 import lombok.extern.log4j.Log4j2;
+import net.coobird.thumbnailator.Thumbnailator;
 
 @Controller
 @Log4j2
@@ -89,6 +98,21 @@ public class UploadController {
 		}// end for
 	}// end uploadAjaxPost */
 	
+	// 이미지 타입인지 검사 하는 메서드
+	private boolean checkImageType(File file) {
+		
+		try {
+			String contentType = Files.probeContentType(file.toPath());
+			return contentType.startsWith("image");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return false;
+		
+	}// end checkImageType
+	
 	//년/월/일 폴더의 생성 (한 폴더 내에 너무 많은 파일의 생성문제 해결) - mkdirs() 메서드 사용
 	private String getFolder() {  //오늘 날짜의 경로를 문자열로 생성
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -101,13 +125,16 @@ public class UploadController {
 		
 	} // end getFolder
 	
-	@PostMapping("/uploadAjaxAction")
-	public void uploadAjaxPost(MultipartFile[] uploadFile) {  //해당 경로가 있는지 검사 후 폴더 생성
+	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ResponseBody
+	public ResponseEntity<List<AttachFileDTO>> uploadAjaxPost(MultipartFile[] uploadFile) {  //해당 경로가 있는지 검사 후 폴더 생성
 		
+		List<AttachFileDTO> list = new ArrayList<>();
 		String uploadFolder = "D:\\upload"; // 파일 저장 경로
 		
+		String uploadFolderPath = getFolder();
 		//폴더 생성 --------
-		File uploadPath = new File(uploadFolder, getFolder()); 
+		File uploadPath = new File(uploadFolder, uploadFolderPath); 
 		log.info("upload path:" + uploadPath);
 		
 		if (uploadPath.exists() == false) {
@@ -119,34 +146,51 @@ public class UploadController {
 			log.info("---------------------------");
 			log.info("Upload File Name : " + multipartFile.getOriginalFilename()); // 업로드파일 원래이름
 			log.info("Upload File Size : " + multipartFile.getSize()); // 업로드 파일 사이즈 확인
-
 			
+			AttachFileDTO attachDTO = new AttachFileDTO();
+
 			String uploadFileName = multipartFile.getOriginalFilename(); // 업로드 파일 이름 String 처리
 			
 			// IE에 파일 경로가 있을 경우
 			// string 객체의 시작 인덱스로 부터 종료 인덱스 전 까지 문자열의 부분 문자열을 반환
 			uploadFileName = uploadFileName.substring(uploadFileName.lastIndexOf("\\") + 1); // 부분은 파일 이름에 경로가 포함되어 있을 경우, 파일 이름만 추출
 			log.info("only file name : " + uploadFileName);
+			attachDTO.setFileName(uploadFileName);
 			
 			//파일 이름 중복 방지 UUID
 			UUID uuid = UUID.randomUUID();
 			
 			uploadFileName = uuid.toString() + "_" + uploadFileName;
 			
-			
-			File saveFile = new File(uploadPath, uploadFileName);
-			
 			try {
-				multipartFile.transferTo(saveFile); // transferTo 메소드에 의해 저장 결로에 실질적으로 File이 생성됨
+			File saveFile = new File(uploadPath, uploadFileName);
+			multipartFile.transferTo(saveFile); // transferTo 메소드에 의해 저장 결로에 실질적으로 File이 생성됨
+			
+			attachDTO.setUuid(uuid.toString());
+			attachDTO.setUploadPath(uploadFolderPath);
+			
+			if(checkImageType(saveFile)) {//이미지 타입 파일 체크
+				
+				attachDTO.setImage(true);
+				
+				FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
+				Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnail, 100, 100);
+				thumbnail.close(); //섬네일용 이미지에 결론적으로 크기가 작아지고, 파일 이름에"_s"가 붙게 됨
+			}// end if
+			
+			//리스트에 추가
+			list.add(attachDTO);
+			
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}// end catch
 
 			
 		}// end for
+		return new ResponseEntity<>(list, HttpStatus.OK); //ResponseBody의 리턴처리
 		
-		
-	}
+	}// end uploadAjaxPost
+	
 	
 	
 	
