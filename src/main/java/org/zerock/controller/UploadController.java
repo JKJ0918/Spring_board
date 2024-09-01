@@ -2,6 +2,9 @@ package org.zerock.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,13 +12,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.zerock.domain.AttachFileDTO;
@@ -192,6 +200,86 @@ public class UploadController {
 	}// end uploadAjaxPost
 	
 	
+	@GetMapping("/display")
+	@ResponseBody
+	public ResponseEntity<byte[]> getFile(String fileName) { // 특정한 파일 이름을 받아서 이미지 데이터를 전송하는 코드
+		
+		log.info("fileName : " + fileName);
+		
+		File file = new File("D:\\upload\\" + fileName); // 파일의 경로가 포함된 fileName을 파라미터로 받음
+		
+		log.info("file: " + file);
+		
+		ResponseEntity<byte[]> result = null;
+		
+		HttpHeaders header = new HttpHeaders(); //응답 헤더를 설정하기 위한 객체 생성
+		
+		try {
+			header.add("Content-Type", Files.probeContentType(file.toPath())); //MINE 타입 추론(probeContentType) 하여 'Content-Type'에 헤더 추가 (image/jpeg와 같은 타입이 설정됨)
+			result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK); // 파일의 내용을 바이트 배열로 복사하여 ResponseEntity 에 담아 HTTP 상태 코드 200(OK)와 함께 반환
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return result;
+	}// end ResponseEntity
+	
+	//                                                     MINE 타입(binatry data) 응답으로 제공
+	@GetMapping(value ="/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@ResponseBody // 메서드의 반환값이 HTTP 응답의 본문으로 직접 전송되도록 설정
+	public ResponseEntity<Resource> downloadFile(@RequestHeader("User-Agent") String userAgent, String fileName){ // 첨부파일 다운로드 메서드
+		//IE 서비스 : User-Agent 정보를 파라미터 값으로 수집하고, IE에 대한 처리 추가함.
+		log.info("download file : " + fileName);
+		
+		Resource resource = new FileSystemResource("D:\\upload\\" + fileName);
+		
+		log.info("resource : " + resource);
+		
+		if(resource.exists() == false) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		String resourceName = resource.getFilename();
+		// UUID 삭제
+		String resourceOriginalName = resourceName.substring(resourceName.indexOf("_") + 1); // UUID 부분을 잘라낸 상태의 파일 이름이 저장
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		try {
+			
+			String downloadName = null;
+			
+			if(userAgent.contains("Trident")) {
+				
+				log.info("인터넷 익스플로러 브라우저");
+				
+				downloadName = URLEncoder.encode(resourceOriginalName, "UTF-8").replaceAll("\\+", " ");
+			}else if(userAgent.contains("Edge")) {
+				
+				log.info("엣지 브라우저");
+				
+				downloadName = URLEncoder.encode(resourceOriginalName, "UTF-8");
+				
+				log.info("Edge name :" + downloadName);
+				
+			}else{
+				
+				log.info("크롬 브라우저");
+				downloadName = new String(resourceOriginalName.getBytes("UTF-8"), "ISO-8859-1");
+				// 파일이름은  UTF-8로 인코딩되어 ISO-8859-1로 변환, 한글 파일 이름이나 특수 문자가 있는 경우에도 제대로 처리
+			}
+			
+			// Content-Disposition 헤더를 추가하여,  브라우저가 파일을 다운로드할 때 파일 이름 지정,
+			headers.add("Content-Disposition", "attachment; filename=" + downloadName );
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+		
+	}// end downloadFile
 	
 	
 }
